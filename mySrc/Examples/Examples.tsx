@@ -16,10 +16,10 @@ export const examples = [
   //   screen: "Worklets",
   //   title: "👩‍🏭 Worklets",
   // },
-  // {
-  //   screen: "Transitions",
-  //   title: "🔁 Transitions",
-  // },
+  {
+    screen: "MyTransitions",
+    title: "🔁 Transitions",
+  },
   {
     screen: "MyPanGesture",
     title: "💳 PanGesture",
@@ -28,10 +28,10 @@ export const examples = [
   //   screen: "Animations",
   //   title: "🐎 Animations",
   // },
-  // {
-  //   screen: "CircularSlider",
-  //   title: "⭕️ Circular Slider",
-  // },
+  {
+    screen: "MyCircularSlider",
+    title: "⭕️ Circular Slider",
+  },
   // {
   //   screen: "Graph",
   //   title: "📈 Graph Interactions",
@@ -44,10 +44,10 @@ export const examples = [
   //   screen: "DragToSort",
   //   title: "📤 Drag To Sort",
   // },
-  // {
-  //   screen: "Swiping",
-  //   title: "💚 Swiping",
-  // },
+  {
+    screen: "MySwiping",
+    title: "💚 Swiping",
+  },
   // {
   //   screen: "Bezier",
   //   title: "⤴️ Bézier",

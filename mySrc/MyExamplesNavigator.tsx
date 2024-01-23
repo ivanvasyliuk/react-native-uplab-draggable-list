@@ -3,7 +3,10 @@ import { createStackNavigator } from "@react-navigation/stack";
 import type { MyRoutes } from "./MyRoutes";
 import { MyExamples } from "./Examples";
 import { MyHeartOfTheMatter } from "./MyHeartOfTheMatter/MyHeartOfTheMatter";
-import { MyPanGesture } from "./MyPanGesture";
+import { MyTransitions } from "./Transitions";
+import { MySwiping } from "./Swiping";
+import { PanGesture } from "./PanGesture";
+import { CircularSlider } from "./CircularSlider/CircularSlider";
 
 const Stack = createStackNavigator<MyRoutes>();
 
@@ -26,9 +29,30 @@ export const MyExamplesNavigator = () => {
       />
       <Stack.Screen
         name="MyPanGesture"
-        component={MyPanGesture}
+        component={PanGesture}
         options={{
-          title: "My The Heart of the Matter",
+          title: "PanGesture",
+        }}
+      />
+      <Stack.Screen
+        name="MyTransitions"
+        component={MyTransitions}
+        options={{
+          title: "Transitions",
+        }}
+      />
+      <Stack.Screen
+        name="MySwiping"
+        component={MySwiping}
+        options={{
+          title: "Swiping",
+        }}
+      />
+      <Stack.Screen
+        name="MyCircularSlider"
+        component={CircularSlider}
+        options={{
+          title: "Swiping",
         }}
       />
     </Stack.Navigator>

@@ -1,1 +1,0 @@
-export { MyPanGesture } from "./MyPanGesture";

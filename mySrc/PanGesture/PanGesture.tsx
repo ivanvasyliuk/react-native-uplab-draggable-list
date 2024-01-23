@@ -11,16 +11,17 @@ import { clamp, withBouncing } from "react-native-redash";
 
 import { Card, Cards, CARD_WIDTH, CARD_HEIGHT } from "../components";
 
-interface IMyPanGestureProps {
+interface GestureProps {
   width: number;
   height: number;
 }
 
-export const MyPanGesture = ({ width, height }: IMyPanGestureProps) => {
+export const PanGesture = ({ width, height }: GestureProps) => {
   const boundX = width - CARD_WIDTH;
   const boundY = height - CARD_HEIGHT;
   const translateX = useSharedValue(0);
   const translateY = useSharedValue(0);
+
   const onGestureEvent = useAnimatedGestureHandler<
     PanGestureHandlerGestureEvent,
     {
@@ -54,19 +55,17 @@ export const MyPanGesture = ({ width, height }: IMyPanGestureProps) => {
     },
   });
 
-  const animatedStyle = useAnimatedStyle(() => {
-    return {
-      transform: [
-        { translateX: translateX.value },
-        { translateY: translateY.value },
-      ],
-    };
-  });
+  const style = useAnimatedStyle(() => ({
+    transform: [
+      { translateX: translateX.value },
+      { translateY: translateY.value },
+    ],
+  }));
 
   return (
     <View style={styles.container}>
       <PanGestureHandler onGestureEvent={onGestureEvent}>
-        <Animated.View {...{ animatedStyle }}>
+        <Animated.View {...{ style }}>
           <Card card={Cards.Card1} />
         </Animated.View>
       </PanGestureHandler>

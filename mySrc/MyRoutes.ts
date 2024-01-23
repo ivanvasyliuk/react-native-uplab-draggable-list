@@ -2,14 +2,14 @@ export type MyRoutes = {
   Examples: undefined;
   MyTheHeartOfTheMatter: undefined;
   Worklets: undefined;
-  Transitions: undefined;
+  MyTransitions: undefined;
   MyPanGesture: undefined;
   Animations: undefined;
-  CircularSlider: undefined;
+  MyCircularSlider: undefined;
   Graph: undefined;
   DragToSort: undefined;
   DynamicSpring: undefined;
-  Swiping: undefined;
+  MySwiping: undefined;
   Bezier: undefined;
   ShapeMorphing: undefined;
   Accordion: undefined;

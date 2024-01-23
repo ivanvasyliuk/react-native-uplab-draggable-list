@@ -20,17 +20,15 @@ export const MyHeartOfTheMatter = () => {
       ctx.x = x.value;
       ctx.y = y.value;
     },
-    onActive: ({ translationX, translationY }, ctx) => {
-      x.value = ctx.x + translationX;
-      y.value = ctx.y + translationY;
+    onActive: (_, ctx) => {
+      x.value = ctx.x;
+      y.value = ctx.y;
     },
   });
 
-  const animatedStyle = useAnimatedStyle(() => {
-    return {
-      transform: [{ translateX: x.value }, { translateY: y.value }],
-    };
-  });
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [{ translateX: x.value }, { translateY: y.value }],
+  }));
 
   return (
     <View style={styles.container}>
