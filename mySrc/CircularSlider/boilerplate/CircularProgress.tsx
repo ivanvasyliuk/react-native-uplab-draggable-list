@@ -1,20 +1,33 @@
-import { StyleSheet } from "react-native";
-import type Animated from "react-native-reanimated";
+import { type ColorValue, StyleSheet } from "react-native";
+import Animated, { useAnimatedProps } from "react-native-reanimated";
 import Svg, { Circle } from "react-native-svg";
 
 import { StyleGuide } from "../../components";
 
 const { PI } = Math;
 
+const AnimatedCircle = Animated.createAnimatedComponent(Circle);
 interface CircularProgressProps {
   theta: Animated.SharedValue<number>;
   r: number;
   strokeWidth: number;
+  backgroundColor: Animated.SharedValue<string | number>;
 }
 
-export const CircularProgress = ({ r, strokeWidth }: CircularProgressProps) => {
+export const CircularProgress = ({
+  r,
+  theta,
+  strokeWidth,
+  backgroundColor,
+}: CircularProgressProps) => {
   const radius = r - strokeWidth / 2;
   const circumference = radius * 2 * PI;
+  const animatedProps = useAnimatedProps(() => {
+    return {
+      stroke: backgroundColor.value as ColorValue,
+      strokeDashoffset: theta.value * radius,
+    };
+  });
   return (
     <Svg style={StyleSheet.absoluteFill}>
       <Circle
@@ -25,14 +38,14 @@ export const CircularProgress = ({ r, strokeWidth }: CircularProgressProps) => {
         r={radius}
         {...{ strokeWidth }}
       />
-      <Circle
+      <AnimatedCircle
         cx={r}
         cy={r}
         fill="transparent"
         r={radius}
         stroke={StyleGuide.palette.primary}
         strokeDasharray={`${circumference}, ${circumference}`}
-        {...{ strokeWidth }}
+        {...{ strokeWidth, animatedProps }}
       />
     </Svg>
   );

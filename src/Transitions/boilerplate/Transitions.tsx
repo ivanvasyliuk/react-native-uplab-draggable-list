@@ -13,7 +13,7 @@ const styles = StyleSheet.create({
   },
 });
 
-export const UseTransition = () => {
+export const Transitions = () => {
   const [toggled, setToggle] = useState(false);
   return (
     <View style={styles.container}>

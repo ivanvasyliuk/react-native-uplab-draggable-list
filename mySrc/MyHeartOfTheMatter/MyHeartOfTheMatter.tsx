@@ -1,30 +1,32 @@
-import { StyleSheet, View } from "react-native";
-import type { PanGestureHandlerGestureEvent } from "react-native-gesture-handler";
-import { PanGestureHandler } from "react-native-gesture-handler";
+import { Dimensions, StyleSheet, View } from "react-native";
+import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import Animated, {
-  useAnimatedGestureHandler,
   useAnimatedStyle,
   useSharedValue,
+  withDecay,
 } from "react-native-reanimated";
 
 import { StyleGuide } from "../components";
 
+const { width } = Dimensions.get("window");
+const BALL_SIZE = 100;
+
 export const MyHeartOfTheMatter = () => {
   const x = useSharedValue(0);
   const y = useSharedValue(0);
-  const onGestureEvent = useAnimatedGestureHandler<
-    PanGestureHandlerGestureEvent,
-    { x: number; y: number }
-  >({
-    onStart: (_, ctx) => {
-      ctx.x = x.value;
-      ctx.y = y.value;
-    },
-    onActive: (_, ctx) => {
-      x.value = ctx.x;
-      y.value = ctx.y;
-    },
-  });
+  const context = useSharedValue({ x: 0, y: 0 });
+
+  const gesture = Gesture.Pan()
+    .onStart(() => {
+      context.value = { x: x.value, y: y.value };
+    })
+    .onUpdate((event) => {
+      x.value = context.value.x + event.translationX;
+      y.value = context.value.y + event.translationY;
+    })
+    .onEnd(() => {
+      x.value = withDecay({ clamp: [0, width - BALL_SIZE] });
+    });
 
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{ translateX: x.value }, { translateY: y.value }],
@@ -32,9 +34,9 @@ export const MyHeartOfTheMatter = () => {
 
   return (
     <View style={styles.container}>
-      <PanGestureHandler onGestureEvent={onGestureEvent}>
+      <GestureDetector gesture={gesture}>
         <Animated.View style={[styles.ball, animatedStyle]} />
-      </PanGestureHandler>
+      </GestureDetector>
     </View>
   );
 };
@@ -47,8 +49,8 @@ const styles = StyleSheet.create({
   },
   ball: {
     backgroundColor: StyleGuide.palette.primary,
-    height: 100,
-    width: 100,
-    borderRadius: 50,
+    height: BALL_SIZE,
+    width: BALL_SIZE,
+    borderRadius: BALL_SIZE / 2,
   },
 });

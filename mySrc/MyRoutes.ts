@@ -6,11 +6,14 @@ export type MyRoutes = {
   MyPanGesture: undefined;
   Animations: undefined;
   MyCircularSlider: undefined;
-  Graph: undefined;
+  MyGraph: undefined;
   DragToSort: undefined;
   DynamicSpring: undefined;
   MySwiping: undefined;
   Bezier: undefined;
   ShapeMorphing: undefined;
   Accordion: undefined;
+  Wallet: undefined;
+  Onboarding: undefined;
+  ListWithSort: undefined;
 };

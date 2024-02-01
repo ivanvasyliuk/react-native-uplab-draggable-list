@@ -1,9 +1,14 @@
 import { View, Dimensions, StyleSheet } from "react-native";
 import Svg, { Path, Defs, Stop, LinearGradient } from "react-native-svg";
 import * as shape from "d3-shape";
-import { interpolate, Extrapolate } from "react-native-reanimated";
+import {
+  interpolate,
+  Extrapolate,
+  useSharedValue,
+  useDerivedValue,
+} from "react-native-reanimated";
 
-import { parsePath } from "../../components/AnimatedHelpers";
+import { getPointAtLength, parsePath } from "../../components/AnimatedHelpers";
 
 import { Cursor } from "./Cursor";
 import { Label } from "./Label";
@@ -56,16 +61,20 @@ const styles = StyleSheet.create({
 });
 
 export const Graph = () => {
-  const point = {
-    coord: {
-      x: 0,
-      y: 0,
-    },
-    data: {
-      x: scaleInvert(0, domain.x, range.x),
-      y: scaleInvert(0, domain.y, range.y),
-    },
-  };
+  const length = useSharedValue(0);
+  const point = useDerivedValue(() => {
+    const p = getPointAtLength(path, length.value);
+    return {
+      coord: {
+        x: p.x,
+        y: p.y,
+      },
+      data: {
+        x: scaleInvert(p.x, domain.x, range.x),
+        y: scaleInvert(p.y, domain.y, range.y),
+      },
+    };
+  });
   return (
     <View style={styles.container}>
       <Label {...{ data, point }} />
@@ -89,7 +98,7 @@ export const Graph = () => {
             fill="url(#gradient)"
           />
         </Svg>
-        <Cursor {...{ path }} />
+        <Cursor {...{ path, length, point }} />
       </View>
     </View>
   );

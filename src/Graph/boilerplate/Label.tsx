@@ -1,6 +1,7 @@
-/* eslint-disable react-native/no-unused-styles */
-
-import { View, StyleSheet } from "react-native";
+import type Animated from "react-native-reanimated";
+import { useDerivedValue } from "react-native-reanimated";
+import { StyleSheet, View } from "react-native";
+import { ReText, round } from "react-native-redash";
 
 import { StyleGuide } from "../../components";
 
@@ -29,9 +30,27 @@ export interface DataPoint {
 }
 
 interface LabelProps {
-  point: DataPoint;
+  point: Animated.SharedValue<DataPoint>;
 }
 
-export const Label = ({}: LabelProps) => {
-  return <View />;
+export const Label = ({ point }: LabelProps) => {
+  const price = useDerivedValue(() => {
+    const p = point.value.data.y;
+    return `$ ${round(p, 2).toLocaleString("en-US", { currency: "USD" })}`;
+  });
+  const date = useDerivedValue(() => {
+    const d = new Date(point.value.data.x);
+    return d.toLocaleDateString("en-US", {
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
+  });
+  return (
+    <View>
+      <ReText style={styles.date} text={date} />
+      <ReText style={styles.price} text={price} />
+    </View>
+  );
 };

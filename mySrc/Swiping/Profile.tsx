@@ -1,5 +1,3 @@
-// @flow
-import * as React from "react";
 import { Dimensions, Image, StyleSheet, Text, View } from "react-native";
 import Animated, {
   Extrapolate,
@@ -80,7 +78,8 @@ export const Profile = ({
   scale,
 }: CardProps) => {
   const x = useDerivedValue(() => (onTop ? translateX.value : 0));
-  const container = useAnimatedStyle(() => ({
+
+  const containerAnimatedStyle = useAnimatedStyle(() => ({
     transform: [
       { translateX: translateX.value },
       { translateY: translateY.value },
@@ -95,22 +94,23 @@ export const Profile = ({
       { scale: onTop ? 1 : scale.value },
     ],
   }));
-  const nope = useAnimatedStyle(() => ({
+
+  const nopeAnimatedStyle = useAnimatedStyle(() => ({
     opacity: interpolate(x.value, [-width / 4, 0], [1, 0]),
   }));
-  const like = useAnimatedStyle(() => ({
+  const likeAnimatedStyle = useAnimatedStyle(() => ({
     opacity: interpolate(x.value, [0, width / 4], [0, 1], Extrapolate.CLAMP),
   }));
 
   return (
-    <Animated.View style={[StyleSheet.absoluteFill, container]}>
+    <Animated.View style={[StyleSheet.absoluteFill, containerAnimatedStyle]}>
       <Image style={styles.image} source={profile.profile} />
       <View style={styles.overlay}>
         <View style={styles.header}>
-          <Animated.View style={[styles.like, like]}>
+          <Animated.View style={[styles.like, likeAnimatedStyle]}>
             <Text style={styles.likeLabel}>LIKE</Text>
           </Animated.View>
-          <Animated.View style={[styles.nope, nope]}>
+          <Animated.View style={[styles.nope, nopeAnimatedStyle]}>
             <Text style={styles.nopeLabel}>NOPE</Text>
           </Animated.View>
         </View>

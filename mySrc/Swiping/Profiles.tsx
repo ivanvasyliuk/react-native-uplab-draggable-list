@@ -7,8 +7,7 @@ import { useSharedValue } from "react-native-reanimated";
 import { StyleGuide } from "../components";
 
 import type { ProfileModel } from "./Profile";
-import type { SwipeHandler } from "./Swipeable";
-import { Swipeable } from "./Swipeable";
+import { type SwipeHandler, Swipeable } from "./Swipeable";
 
 const styles = StyleSheet.create({
   container: {
@@ -52,8 +51,8 @@ interface ProfilesProps {
 
 export const Profiles = ({ profiles: defaultProfiles }: ProfilesProps) => {
   const topCard = useRef<SwipeHandler>(null);
-  const scale = useSharedValue(0);
   const [profiles, setProfiles] = useState(defaultProfiles);
+  const scale = useSharedValue(0);
   const onSwipe = useCallback(() => {
     setProfiles(profiles.slice(0, profiles.length - 1));
   }, [profiles]);
@@ -81,18 +80,14 @@ export const Profiles = ({ profiles: defaultProfiles }: ProfilesProps) => {
       </View>
       <View style={styles.footer}>
         <RectButton
+          onPress={() => topCard.current?.swipeLeft()}
           style={styles.circle}
-          onPress={() => {
-            topCard.current?.swipeLeft();
-          }}
         >
           <Icon name="x" size={32} color="#ec5288" />
         </RectButton>
         <RectButton
+          onPress={() => topCard.current?.swipeRight()}
           style={styles.circle}
-          onPress={() => {
-            topCard.current?.swipeRight();
-          }}
         >
           <Icon name="heart" size={32} color="#6ee3b4" />
         </RectButton>

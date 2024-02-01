@@ -24,42 +24,54 @@ export const examples = [
     screen: "MyPanGesture",
     title: "💳 PanGesture",
   },
-  // {
-  //   screen: "Animations",
-  //   title: "🐎 Animations",
-  // },
+  {
+    screen: "Animations",
+    title: "🐎 Animations",
+  },
   {
     screen: "MyCircularSlider",
     title: "⭕️ Circular Slider",
   },
-  // {
-  //   screen: "Graph",
-  //   title: "📈 Graph Interactions",
-  // },
-  // {
-  //   screen: "DynamicSpring",
-  //   title: "👨‍🔬 Dynamic Spring",
-  // },
-  // {
-  //   screen: "DragToSort",
-  //   title: "📤 Drag To Sort",
-  // },
+  {
+    screen: "MyGraph",
+    title: "📈 Graph Interactions",
+  },
+  {
+    screen: "DynamicSpring",
+    title: "👨‍🔬 Dynamic Spring",
+  },
+  {
+    screen: "DragToSort",
+    title: "📤 Drag To Sort",
+  },
   {
     screen: "MySwiping",
     title: "💚 Swiping",
   },
-  // {
-  //   screen: "Bezier",
-  //   title: "⤴️ Bézier",
-  // },
+  {
+    screen: "Bezier",
+    title: "⤴️ Bézier",
+  },
   // {
   //   screen: "ShapeMorphing",
   //   title: "☺️ Shape Morphing",
   // },
-  // {
-  //   screen: "Accordion",
-  //   title: "🗺 Accordion",
-  // },
+  {
+    screen: "Accordion",
+    title: "🗺 Accordion",
+  },
+  {
+    screen: "Wallet",
+    title: "👛 Wallet",
+  },
+  {
+    screen: "Onboarding",
+    title: "🐖 Onboarding",
+  },
+  {
+    screen: "ListWithSort",
+    title: "🐥 List with sort",
+  },
 ] as const;
 
 const styles = StyleSheet.create({

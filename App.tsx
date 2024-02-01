@@ -22,7 +22,7 @@ const assets = [...swipingAssets];
 const Stack = createStackNavigator<Routes>();
 const App = () => (
   <LoadAssets assets={assets}>
-    <Stack.Navigator>
+    <Stack.Navigator initialRouteName="MyWork">
       <Stack.Screen
         name="Examples"
         component={Examples}
