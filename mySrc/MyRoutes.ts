@@ -16,4 +16,7 @@ export type MyRoutes = {
   Wallet: undefined;
   Onboarding: undefined;
   ListWithSort: undefined;
+  AppleMusic: undefined;
+  SkiaGraph: undefined;
+  SkiaGraphWallet: undefined;
 };

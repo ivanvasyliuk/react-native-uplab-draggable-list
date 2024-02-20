@@ -28,8 +28,8 @@ export const Cursor = ({ path, point, length }: ICursorProps) => {
     .onStart(() => {
       offsetX.value = interpolate(
         length.value,
-        [0, path.length],
         [0, width],
+        [0, path.length],
         Extrapolate.CLAMP
       );
     })
@@ -46,7 +46,6 @@ export const Cursor = ({ path, point, length }: ICursorProps) => {
         velocity: e.velocityX,
         clamp: [0, path.length],
       });
-      offsetX.value = e.translationX;
     });
 
   const animatedStyle = useAnimatedStyle(() => {

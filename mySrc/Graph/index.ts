@@ -1,1 +1,1 @@
-export { MyGraph } from "./Graph";
+export { Graph } from "./boilerplate/Graph";

@@ -13,15 +13,20 @@ import { MySwiping } from "./Swiping";
 import { Accordion } from "./Accordion";
 import { Bezier } from "./Bezier";
 import { Wallet } from "./Wallet";
-import { Graph } from "./Graph/boilerplate";
+import { Graph } from "./Graph";
 import { Onboarding } from "./Onboarding";
 import { ListWithSort } from "./ListWithSort";
+import { AppleMusic } from "./AppleMusicDragToSort";
+import { SkiaGraph } from "./SkiaGraph";
+import { SkiaGraphWallet } from "./SkiaWalletGraph";
 
 const Stack = createStackNavigator<MyRoutes>();
 
 export const MyExamplesNavigator = () => {
   return (
-    <Stack.Navigator initialRouteName="ListWithSort">
+    <Stack.Navigator
+    //  initialRouteName="SkiaGraph"
+    >
       <Stack.Screen
         name="Examples"
         component={MyExamples}
@@ -75,14 +80,14 @@ export const MyExamplesNavigator = () => {
         name="Animations"
         component={Animations}
         options={{
-          title: "Swiping",
+          title: "Animations",
         }}
       />
       <Stack.Screen
         name="DragToSort"
         component={DragToSort}
         options={{
-          title: "Swiping",
+          title: "Drag To Sort",
         }}
       />
       <Stack.Screen
@@ -96,14 +101,14 @@ export const MyExamplesNavigator = () => {
         name="Accordion"
         component={Accordion}
         options={{
-          title: "Dynamic Spring",
+          title: "Accordion",
         }}
       />
       <Stack.Screen
         name="Bezier"
         component={Bezier}
         options={{
-          title: "Dynamic Spring",
+          title: "Bezier",
         }}
       />
       <Stack.Screen
@@ -125,6 +130,27 @@ export const MyExamplesNavigator = () => {
         component={ListWithSort}
         options={{
           title: "List with sort",
+        }}
+      />
+      <Stack.Screen
+        name="AppleMusic"
+        component={AppleMusic}
+        options={{
+          title: "Apple music",
+        }}
+      />
+      <Stack.Screen
+        name="SkiaGraph"
+        component={SkiaGraph}
+        options={{
+          title: "Skia Graph",
+        }}
+      />
+      <Stack.Screen
+        name="SkiaGraphWallet"
+        component={SkiaGraphWallet}
+        options={{
+          title: "Skia Graph",
         }}
       />
     </Stack.Navigator>

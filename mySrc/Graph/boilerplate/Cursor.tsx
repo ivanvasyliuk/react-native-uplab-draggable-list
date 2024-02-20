@@ -40,20 +40,20 @@ interface CursorProps {
 }
 
 export const Cursor = ({ path, length, point }: CursorProps) => {
-  const context = useSharedValue({ x: 0 });
+  const contextPositionX = useSharedValue(0);
 
   const gesture = Gesture.Pan()
     .onStart(() => {
-      context.value.x = interpolate(
+      contextPositionX.value = interpolate(
         length.value,
-        [0, width],
         [0, path.length],
+        [0, width],
         Extrapolate.CLAMP
       );
     })
     .onUpdate((e) => {
       length.value = interpolate(
-        context.value.x + e.translationX,
+        contextPositionX.value + e.translationX,
         [0, width],
         [0, path.length],
         Extrapolate.CLAMP

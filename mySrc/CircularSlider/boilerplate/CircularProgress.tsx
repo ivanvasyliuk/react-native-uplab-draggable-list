@@ -22,12 +22,24 @@ export const CircularProgress = ({
 }: CircularProgressProps) => {
   const radius = r - strokeWidth / 2;
   const circumference = radius * 2 * PI;
+  // const progress = useDerivedValue(() => theta.value);
   const animatedProps = useAnimatedProps(() => {
     return {
       stroke: backgroundColor.value as ColorValue,
-      strokeDashoffset: theta.value * radius,
+      // strokeDashoffset: progress.value * radius,
+      // strokeDashoffset: Circle_Length * progress.value,
+      strokeDashoffset: radius * theta.value,
     };
   });
+
+  // useEffect(() => {
+  //   progress.value = withRepeat(withTiming(1, { duration: 5000 }), 100, true);
+  // }, [progress]);
+  // useEffect(() => {
+  //   progress.value = withRepeat(withTiming(1, { duration: 5000 }), 100, true);
+  // progress.value = withTiming(0, { duration: 2000 });
+  // }, [progress]);
+
   return (
     <Svg style={StyleSheet.absoluteFill}>
       <Circle

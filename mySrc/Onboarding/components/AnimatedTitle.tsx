@@ -1,7 +1,8 @@
-import Animated, {
-  interpolate,
-  useAnimatedStyle,
-} from "react-native-reanimated";
+import { StyleSheet, Text, View } from "react-native";
+import type Animated from "react-native-reanimated";
+import { interpolate, useAnimatedStyle } from "react-native-reanimated";
+
+import { Fader } from "./Fader";
 
 interface IAnimatedTitleProps {
   title: string;
@@ -25,5 +26,25 @@ export const AnimatedTitle = ({
     return { opacity, position: "absolute" };
   });
 
-  return <Animated.Text {...{ style }}>{title}</Animated.Text>;
+  return (
+    <Fader
+      animatedActiveIndex={animatedActiveIndex}
+      {...{ index, totalSlides, style }}
+    >
+      <View style={styles.textContainer}>
+        <Text style={styles.title}>{title}</Text>
+      </View>
+    </Fader>
+  );
 };
+
+const styles = StyleSheet.create({
+  textContainer: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+  },
+  title: {
+    width: "100%",
+    textAlign: "center",
+  },
+});

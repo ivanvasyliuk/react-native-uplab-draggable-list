@@ -1,10 +1,8 @@
-import { Feather } from "@expo/vector-icons";
-import type { ReactElement, RefObject } from "react";
-import { StyleSheet, View } from "react-native";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
-import Animated, {
+import type Animated from "react-native-reanimated";
+import {
   Easing,
-  scrollTo,
+  runOnJS,
   useAnimatedReaction,
   useAnimatedStyle,
   useDerivedValue,
@@ -12,175 +10,335 @@ import Animated, {
   withSpring,
   withTiming,
 } from "react-native-reanimated";
+import React, { type ReactElement } from "react";
 import { clamp } from "react-native-redash";
 
-interface ISortableItemProps {
-  children: ReactElement;
-  offsets: { y: Animated.SharedValue<number> }[];
-  item: { height: number; width: number };
-  scrollViewRef: RefObject<Animated.ScrollView>;
-  scrollY: Animated.SharedValue<number>;
-  containerHeight: number;
-  contentHeight: number;
-  index: number;
+import { objectMove } from "./utils";
+import { ListItem } from "./ListItem";
+
+export enum ScrollDirection {
+  None,
+  Up,
+  Down,
 }
 
-export const SortableItem = (props: ISortableItemProps) => {
+// const AnimatedTouchableOpacity =
+//   Animated.createAnimatedComponent(TouchableOpacity);
+// const DELETE_RIGHT_PADDING = 70;
+
+interface ISortableItemProps {
+  id: string;
+  topAbsolutePadding: number;
+  positions: Animated.SharedValue<{ [id: string]: number }>;
+  lowerBound: Animated.SharedValue<number>;
+  draggableItemPosition: Animated.SharedValue<number>;
+  autoScrollDirection: Animated.SharedValue<ScrollDirection>;
+  itemsCount: number;
+  item: { height: number; width: number };
+  containerHeight: number;
+  children: ReactElement;
+  setActiveGesture: React.Dispatch<React.SetStateAction<boolean>>;
+  activeId: Animated.SharedValue<string>;
+  // onRemove: (id: string) => void;
+}
+
+// const AnimatedTouchableOpacity =
+//   Animated.createAnimatedComponent(TouchableOpacity);
+
+const SortableItem = (props: ISortableItemProps) => {
   const {
+    id,
+    topAbsolutePadding,
     children,
-    offsets,
-    index,
+    setActiveGesture,
+    activeId,
+    draggableItemPosition,
+    positions,
+    lowerBound,
     containerHeight,
-    contentHeight,
-    scrollY,
-    scrollViewRef,
-    item: { height, width },
+    itemsCount,
+    autoScrollDirection,
+    item: { height },
+    // onRemove,
   } = props;
+  const gestureActive = useSharedValue(id === activeId.value);
+  // const removeGestureActive = useSharedValue(false);
+  const positionY = useSharedValue(positions.value[id] * height);
+  // const contextPositionX = useSharedValue(0);
+  // const positionX = useSharedValue(0);
+  const top = useSharedValue(positions.value[id] * height);
+  const upperBound = useDerivedValue(() => lowerBound.value + containerHeight);
+  const targetLowerBound = useSharedValue(lowerBound.value);
+  const fingerPosition = useSharedValue(0);
 
-  const gestureActive = useSharedValue(false);
-  const gestureFinishing = useSharedValue(false);
-  const offset = offsets[index];
-  const y = useSharedValue(offset.y.value);
-  const contextOffsetY = useSharedValue(0);
-
-  // const longPressGesture = Gesture.LongPress().onStart(() => {
-  //   gestureActive.value = true;
-  // });
-  // useAnimatedReaction(
-  //   () => offsets[index].y.value,
-  //   (newOrder) => {
-  //     console.log("newOrder", newOrder);
-  //     if (!gestureActive.value) {
-  //       y.value = withTiming(offset.y.value, {});
-  //     }
-  //   }
-  // );
   useAnimatedReaction(
-    () => offset.y.value,
-    () => {
-      if (!gestureActive.value) {
-        // const pos = getPosition(newOrder);
-        y.value = withTiming(offset.y.value, {
-          easing: Easing.inOut(Easing.ease),
-          duration: 350,
-        });
-        // translateY.value = withTiming(pos.y, animationConfig);
+    () => positionY.value,
+    (positionYValue, previousValue) => {
+      if (
+        positionYValue !== null &&
+        previousValue !== null &&
+        positionYValue !== previousValue
+      ) {
+        if (gestureActive.value) {
+          top.value = positionYValue;
+          setPosition(positionYValue, itemsCount, positions, id, height);
+          setAutoScroll(
+            positionYValue,
+            lowerBound.value,
+            upperBound.value,
+            height,
+            autoScrollDirection
+          );
+        }
       }
     }
   );
 
+  // If another item is moving and changes this ones position, move to new position.
+  useAnimatedReaction(
+    () => positions.value[id],
+    (currentPosition, previousPosition) => {
+      if (
+        currentPosition !== null &&
+        previousPosition !== null &&
+        currentPosition !== previousPosition
+      ) {
+        if (!gestureActive.value) {
+          top.value = withSpring(currentPosition * height);
+        }
+      }
+    },
+    [gestureActive.value]
+  );
+
+  // If moving and scrolling, update position y.
+  useAnimatedReaction(
+    () => lowerBound.value,
+    (currentLowerBound, previousLowerBound) => {
+      if (
+        currentLowerBound !== null &&
+        previousLowerBound !== null &&
+        currentLowerBound !== previousLowerBound &&
+        gestureActive.value
+      ) {
+        const diff = previousLowerBound - currentLowerBound;
+        positionY.value -= diff;
+      }
+    },
+    [gestureActive.value]
+  );
+
+  // When the autoScrollDirection changes, set the target lower bound with timing.
+  useAnimatedReaction(
+    () => autoScrollDirection.value,
+    (scrollDirection, previousValue) => {
+      if (
+        scrollDirection !== null &&
+        previousValue !== null &&
+        scrollDirection !== previousValue
+      ) {
+        switch (scrollDirection) {
+          case ScrollDirection.Up: {
+            targetLowerBound.value = lowerBound.value;
+            if (targetLowerBound.value === 0) {
+              break;
+            }
+            targetLowerBound.value = withTiming(0, {
+              duration: top.value * 2.5,
+              easing: Easing.inOut(Easing.bezierFn(0.07, -0.01, 0.61, 0.22)),
+            });
+            break;
+          }
+          case ScrollDirection.Down: {
+            const contentHeight = itemsCount * height;
+            const maxScroll = contentHeight - containerHeight;
+
+            targetLowerBound.value = lowerBound.value;
+            if (maxScroll === targetLowerBound.value) {
+              break;
+            }
+            targetLowerBound.value = withTiming(maxScroll, {
+              duration: (itemsCount * height - top.value) * 2.5,
+              easing: Easing.inOut(Easing.bezierFn(0.07, -0.01, 0.61, 0.22)),
+            });
+            break;
+          }
+          case ScrollDirection.None: {
+            targetLowerBound.value = lowerBound.value;
+            break;
+          }
+        }
+      }
+    }
+  );
+
+  // When the target lower bound changes, update the lower bound value.
+  useAnimatedReaction(
+    () => targetLowerBound.value,
+    (targetLowerBoundValue, previousValue) => {
+      if (
+        targetLowerBoundValue !== null &&
+        previousValue !== null &&
+        targetLowerBoundValue !== previousValue
+      ) {
+        if (gestureActive.value) {
+          lowerBound.value = targetLowerBoundValue;
+        }
+      }
+    }
+  );
+
+  // useAnimatedReaction(
+  //   () => activeId.value,
+  //   (newActiveId) => {
+  //     removeGestureActive.value = newActiveId === id;
+  //     if (removeGestureActive.value) {
+  //       positionX.value = withSpring(DELETE_RIGHT_PADDING, {
+  //         overshootClamping: true,
+  //       });
+  //     } else {
+  //       positionX.value = withSpring(0, {
+  //         overshootClamping: true,
+  //       });
+  //     }
+  //   }
+  // );
+
+  // const removeGesture = Gesture.Pan()
+  //   .activeOffsetX([-20, 20])
+  //   .onStart(() => {
+  //     activeId.value = id;
+  //     contextPositionX.value = positionX.value;
+  //   })
+  //   .onChange((e) => {
+  //     positionX.value = clamp(
+  //       contextPositionX.value + e.translationX,
+  //       -DELETE_RIGHT_PADDING,
+  //       0
+  //     );
+  //   })
+  //   .onEnd(({ velocityX }) => {
+  //     if (positionX.value <= -DELETE_RIGHT_PADDING / 2) {
+  //       positionX.value = withSpring(-DELETE_RIGHT_PADDING, {
+  //         velocity: velocityX,
+  //         overshootClamping: true,
+  //       });
+  //     } else {
+  //       positionX.value = withSpring(0, {
+  //         velocity: velocityX,
+  //         overshootClamping: true,
+  //       });
+  //     }
+  //   });
+
   const gesture = Gesture.Pan()
-    .onStart(() => {
+    .activateAfterLongPress(300)
+    .onStart((e) => {
+      runOnJS(setActiveGesture)(true);
+      activeId.value = id;
+      // positionX.value = 0;
+      positionY.value = positions.value[id] * height;
+      draggableItemPosition.value = positionY.value - lowerBound.value;
+      fingerPosition.value = e.y;
+
       gestureActive.value = true;
-      contextOffsetY.value = offset.y.value;
     })
     .onUpdate((e) => {
-      y.value = clamp(
-        contextOffsetY.value + e.translationY,
+      positionY.value = clamp(
+        e.absoluteY -
+          topAbsolutePadding +
+          lowerBound.value -
+          fingerPosition.value,
         0,
-        contentHeight - height
+        (itemsCount - 1) * height
       );
-      const offsetY = Math.round(y.value / height) * height;
-      offsets.forEach((o, i) => {
-        if (o.y.value === offsetY && index !== i) {
-          const tmp = o.y.value;
-          o.y.value = offset.y.value;
-          offset.y.value = tmp;
-        }
-      });
-
-      // Scroll up and down if necessary
-      const lowerBound = scrollY.value;
-      const upperBound = lowerBound + containerHeight - height;
-      const maxScroll = contentHeight - containerHeight;
-      const leftToScrollDown = maxScroll - scrollY.value;
-      if (y.value < lowerBound) {
-        const diff = Math.min(lowerBound - y.value, lowerBound);
-        scrollY.value -= diff;
-        scrollTo(scrollViewRef, 0, scrollY.value, false);
-        contextOffsetY.value -= diff;
-        y.value = contextOffsetY.value + e.translationY;
-      }
-      if (y.value > upperBound) {
-        const diff = Math.min(y.value - upperBound, leftToScrollDown);
-        scrollY.value += diff;
-        scrollTo(scrollViewRef, 0, scrollY.value, false);
-        contextOffsetY.value += diff;
-        y.value = contextOffsetY.value + e.translationY;
-      }
+      draggableItemPosition.value = positionY.value - lowerBound.value;
     })
     .onEnd(() => {
+      autoScrollDirection.value = ScrollDirection.None;
+      const finishPosition = positions.value[id] * height;
+      top.value = withTiming(finishPosition);
+      activeId.value = "";
       gestureActive.value = false;
-      offset.y.value = withSpring(
-        offset.y.value,
-        {},
-        () => (gestureFinishing.value = false)
-      );
+      runOnJS(setActiveGesture)(false);
     });
-  // .simultaneousWithExternalGesture(longPressGesture);
-
-  const composedGesture = gesture;
-  // Gesture.Race(gesture, longPressGesture);
-
-  const translateY = useDerivedValue(() => {
-    return withSpring(gestureActive.value ? y.value : offset.y.value);
-  });
 
   const animatedStyle = useAnimatedStyle(() => {
     return {
-      // ...(gestureActive.value || gestureFinishing.value
-      //   ? styles.shadow
-      //   : undefined),
-      zIndex: gestureActive.value || gestureFinishing.value ? 100 : 0,
-      transform: [
-        { translateY: translateY.value },
-        { scale: withTiming(gestureActive.value ? 1.04 : 1) },
-      ],
+      top: clamp(top.value, 0, (itemsCount - 1) * height),
+      // transform: [{ translateX: positionX.value }],
+      zIndex: gestureActive.value ? 2 : withTiming(1),
     };
-  });
+  }, []);
+
+  // const removeButtonStyle = useAnimatedStyle(() => {
+  //   return {
+  //     backgroundColor: "red",
+  //     height,
+  //     width: DELETE_RIGHT_PADDING,
+  //     justifyContent: "center",
+  //     alignItems: "center",
+  //     position: "absolute",
+  //     top: top.value,
+  //     right: 0,
+  //     opacity: removeGestureActive.value ? 1 : 0,
+  //   };
+  // });
 
   return (
-    <Animated.View style={[styles.container, { height, width }, animatedStyle]}>
-      <>
-        {children}
-        <GestureDetector gesture={composedGesture}>
-          <View style={styles.iconContainer}>
-            <Feather name="align-justify" size={28} color="black" />
-          </View>
-        </GestureDetector>
-      </>
-    </Animated.View>
+    <GestureDetector gesture={gesture}>
+      <ListItem style={animatedStyle}>{children}</ListItem>
+    </GestureDetector>
+    //   <>
+    //   <AnimatedTouchableOpacity
+    //   onPress={() => onRemove(id)}
+    //     style={removeButtonStyle}
+    //   >
+    //     <Text style={{ color: "white" }}>Remove</Text>
+    //   </AnimatedTouchableOpacity>
+    // </>
   );
 };
 
-const styles = StyleSheet.create({
-  iconContainer: {
-    justifyContent: "center",
-    alignItems: "center",
-    paddingHorizontal: 10,
-    // borderLeftWidth: 2,
-  },
-  // shadow: {
-  //   ...Platform.select({
-  //     ios: {
-  //       shadowOpacity: 0.3,
-  //       shadowRadius: 5,
-  //       shadowColor: "red",
-  //       // shadowOffset: { height: -1, width: 0 },
-  //     },
-  //     android: {
-  //       elevation: 15,
-  //     },
-  //   }),
-  // },
+function setPosition(
+  positionY: number,
+  songsCount: number,
+  positions: Animated.SharedValue<{ [id: string]: number }>,
+  id: string,
+  itemHeight: number
+) {
+  "worklet";
+  const newPosition = clamp(
+    Math.round(positionY / itemHeight),
+    0,
+    songsCount - 1
+  );
+  if (newPosition !== positions.value[id]) {
+    positions.value = objectMove(
+      positions.value,
+      positions.value[id],
+      newPosition
+    );
+  }
+}
 
-  container: {
-    borderWidth: 0.2,
-    backgroundColor: "white",
-    position: "absolute",
-    top: 0,
-    left: 0,
-    right: 0,
-    flexDirection: "row",
-  },
-});
+function setAutoScroll(
+  positionY: number,
+  lowerBound: number,
+  upperBound: number,
+  scrollThreshold: number,
+  autoScroll: Animated.SharedValue<ScrollDirection>
+) {
+  "worklet";
+  if (positionY <= lowerBound) {
+    autoScroll.value = ScrollDirection.Up;
+  } else if (positionY >= upperBound - scrollThreshold) {
+    autoScroll.value = ScrollDirection.Down;
+  } else {
+    autoScroll.value = ScrollDirection.None;
+  }
+}
+
+// eslint-disable-next-line import/no-default-export
+export default SortableItem;
+// export default React.memo(SortableItem);

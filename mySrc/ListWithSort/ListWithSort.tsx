@@ -1,4 +1,5 @@
 import { Dimensions, StyleSheet, Text, View } from "react-native";
+import { Feather } from "@expo/vector-icons";
 
 import { Cards } from "../components";
 
@@ -8,13 +9,19 @@ const { width } = Dimensions.get("window");
 const ITEM_HEIGHT = 70;
 
 export const ListWithSort = () => {
-  const list = [...new Array(20)].map(() => Cards.Card1);
+  const list = [...new Array(115)].map(() => Cards.Card1);
   return (
-    <View style={{ height: 400 }}>
+    <View style={{ height: 500, borderWidth: StyleSheet.hairlineWidth * 3 }}>
       <SortableList item={{ width, height: ITEM_HEIGHT }}>
         {list.map((_, index) => (
-          <View style={styles.card} key={index}>
-            <Text>ITEM</Text>
+          <View style={styles.itemContainer} key={index}>
+            <View style={styles.itemTitleContainer}>
+              <Text>ITEM</Text>
+              <Text>{index}</Text>
+            </View>
+            <View style={styles.iconContainer}>
+              <Feather name="align-justify" size={28} color="black" />
+            </View>
           </View>
         ))}
       </SortableList>
@@ -23,13 +30,25 @@ export const ListWithSort = () => {
 };
 
 const styles = StyleSheet.create({
-  card: {
+  itemContainer: {
     height: ITEM_HEIGHT,
-    // width: "100%",
     flex: 1,
+    flexDirection: "row",
+    gap: 5,
     alignItems: "center",
     justifyContent: "center",
-    // marginVertical: 16,
-    // backgroundColor: "red",
+  },
+  itemTitleContainer: {
+    flex: 1,
+    flexDirection: "row",
+    gap: 5,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  iconContainer: {
+    justifyContent: "center",
+    alignItems: "center",
+    paddingHorizontal: 10,
+    height: "100%",
   },
 });

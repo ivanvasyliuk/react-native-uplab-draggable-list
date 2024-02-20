@@ -1,6 +1,8 @@
 const containerWidth = 327;
 const containerHeight = 336;
 
+export const icons = ["qrcode", "camerao", "notification", "eyeo"] as const;
+
 export const titles = [
   "onboarding.title_1",
   "onboarding.title_2",

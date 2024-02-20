@@ -1,9 +1,10 @@
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useState } from "react";
 import {
   type LayoutRectangle,
   SafeAreaView,
   View,
   StyleSheet,
+  Button,
 } from "react-native";
 import {
   Easing,
@@ -75,19 +76,29 @@ export const Onboarding = () => {
         }
       }
     });
+
+  const handleNavigateToLogin = useCallback(() => {
+    console.log("Navigate to Login");
+  }, []);
+
+  const isLastSlide = activeIndex === MAX_INDEX;
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.content}>
-        {titles.map((title, index) => (
-          <AnimatedTitle
-            key={title}
-            title={title}
-            index={index}
-            totalSlides={titles.length}
-            animatedActiveIndex={animatedActiveIndex}
-          />
-        ))}
-        <GestureDetector gesture={gesture}>
+      <GestureDetector gesture={gesture}>
+        <View style={styles.content}>
+          {/* TITLE */}
+          <View style={styles.slideTitleContainer}>
+            {titles.map((title, index) => (
+              <AnimatedTitle
+                key={title}
+                title={title}
+                index={index}
+                totalSlides={titles.length}
+                animatedActiveIndex={animatedActiveIndex}
+              />
+            ))}
+          </View>
+          {/* TILES */}
           <View
             style={styles.animationContainer}
             onLayout={({ nativeEvent: { layout } }) =>
@@ -101,7 +112,23 @@ export const Onboarding = () => {
               />
             ) : null}
           </View>
-        </GestureDetector>
+        </View>
+      </GestureDetector>
+      <View style={styles.footer}>
+        {!isLastSlide ? (
+          <Button
+            onPress={() => handleNav("next")}
+            // translateTitle
+            title="onboarding.next"
+            // RightIcon={<ArrowRight fill={theme.colors.white} />}
+          />
+        ) : (
+          <Button
+            onPress={handleNavigateToLogin}
+            // translateTitle
+            title="onboarding.get_started"
+          />
+        )}
       </View>
     </SafeAreaView>
   );
@@ -141,12 +168,12 @@ const styles = StyleSheet.create({
   //     flex: 1,
   //     alignItems: "center",
   //   },
-  //   slideTitleContainer: {
-  //     width: "100%",
-  //     height: 150,
-  //     position: "relative",
-  //   },
-  //   footer: {
-  //     paddingHorizontal: theme.paddings.contentPaddingHorizontal,
-  //   },
+  slideTitleContainer: {
+    width: "100%",
+    height: 150,
+    position: "relative",
+  },
+  footer: {
+    paddingHorizontal: 24,
+  },
 });

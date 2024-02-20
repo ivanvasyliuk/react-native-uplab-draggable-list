@@ -45,6 +45,10 @@ export const examples = [
     title: "📤 Drag To Sort",
   },
   {
+    screen: "SkiaGraphWallet",
+    title: "🪇 Skia Graph Wallet",
+  },
+  {
     screen: "MySwiping",
     title: "💚 Swiping",
   },
@@ -61,16 +65,24 @@ export const examples = [
     title: "🗺 Accordion",
   },
   {
+    screen: "SkiaGraph",
+    title: "🎳 Skia Graph",
+  },
+  {
     screen: "Wallet",
     title: "👛 Wallet",
   },
   {
     screen: "Onboarding",
-    title: "🐖 Onboarding",
+    title: "🧗‍♀️ Onboarding",
   },
   {
     screen: "ListWithSort",
     title: "🐥 List with sort",
+  },
+  {
+    screen: "AppleMusic",
+    title: "🎧 Apple music",
   },
 ] as const;
 

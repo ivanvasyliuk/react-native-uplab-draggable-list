@@ -81,7 +81,7 @@ export const LoadAssets = ({ assets, fonts, children }: LoadAssetsProps) => {
   return (
     <View style={{ flex: 1 }} onLayout={onLayoutRootView}>
       <NavigationContainer {...{ onStateChange, initialState }}>
-        <StatusBar style="light" />
+        <StatusBar style="dark" />
         {children}
       </NavigationContainer>
     </View>
