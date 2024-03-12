@@ -3,11 +3,9 @@
 ## Installation
 
 ```sh
-$ yarn
+$ npm install react-native-draggable-list-uplab
 ```
 
-## Start
+### Start
 
-```
-$ yarn start
-```
+import DraggableList from 'react-native-draggable-list-uplab'

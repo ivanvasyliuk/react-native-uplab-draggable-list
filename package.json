@@ -1,6 +1,6 @@
 {
   "name": "react-native-draggable-list-uplab",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Draggable list",
   "main": "node_modules/expo/AppEntry.js",
   "scripts": {
@@ -41,5 +41,15 @@
   "private": false,
   "engines": {
     "node": ">=12"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ivanvasyliuk/react-native-draggable-list-uplab.git"
+  },
+  "author": "https://github.com/ivanvasyliuk",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ivanvasyliuk/react-native-draggable-list-uplab/issues"
+  },
+  "homepage": "https://github.com/ivanvasyliuk/react-native-draggable-list-uplab#readme"
 }
