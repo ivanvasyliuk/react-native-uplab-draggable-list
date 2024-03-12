@@ -1,6 +1,6 @@
 {
   "name": "react-native-draggable-list-uplab",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Draggable list",
   "main": "index.js",
   "scripts": {
