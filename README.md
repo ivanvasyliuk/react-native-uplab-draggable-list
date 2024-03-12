@@ -12,5 +12,5 @@ $ npm install react-native-draggable-list-uplab
 ## Start
 
 ```JavaScript
-import DraggableList from 'react-native-draggable-list-uplab'
+import { DraggableList } from "react-native-draggable-list-uplab";
 ```
