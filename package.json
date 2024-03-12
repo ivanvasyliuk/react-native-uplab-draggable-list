@@ -1,6 +1,6 @@
 {
-  "name": "react-native-draggable-list-uplab",
-  "version": "1.0.9",
+  "name": "react-native-uplab-draggable-list",
+  "version": "1.1.0",
   "description": "Draggable list",
   "main": "index.js",
   "scripts": {
@@ -43,12 +43,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ivanvasyliuk/react-native-draggable-list-uplab.git"
+    "url": "git+https://github.com/ivanvasyliuk/react-native-uplab-draggable-list.git"
   },
   "author": "https://github.com/ivanvasyliuk",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/ivanvasyliuk/react-native-draggable-list-uplab/issues"
+    "url": "https://github.com/ivanvasyliuk/react-native-uplab-draggable-list/issues"
   },
-  "homepage": "https://github.com/ivanvasyliuk/react-native-draggable-list-uplab#readme"
+  "homepage": "https://github.com/ivanvasyliuk/react-native-uplab-draggable-list#readme"
 }
