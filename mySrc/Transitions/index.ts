@@ -1,1 +1,0 @@
-export { MyTransitions } from "./Transitions";

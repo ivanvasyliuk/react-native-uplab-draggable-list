@@ -1,1 +1,0 @@
-export { MySwiping } from "./Swiping";

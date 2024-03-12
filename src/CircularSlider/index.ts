@@ -1,1 +1,0 @@
-export { CircularSlider } from "./CircularSlider";
